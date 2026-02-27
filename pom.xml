@@ -1,149 +1,150 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Clean POM for Selenium + Cucumber (TestNG) as used by executeautomation/SeleniumWithCucucumber
+  - Java 17 compatible
+  - Proper <build>/<plugins>/<plugin> structure
+  - Surefire runs TestNG suite (src/test/java/testng.xml)
+  - Cucumber JSON at target/cucumber.json for report generation
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             https://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-    <modelVersion>4.0.0</modelVersion>
+  <modelVersion>4.0.0</modelVersion>
 
-    <groupId>groupId</groupId>
-    <artifactId>CucumberBasics</artifactId>
-    <version>1.0-SNAPSHOT</version>
+  <groupId>com.executeautomation</groupId>
+  <artifactId>CucumberBasics</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <name>CucumberBasics</name>
+  <description>Selenium + Cucumber (TestNG) demo</description>
+  <url>https://github.com/executeautomation/SeleniumWithCucucumber</url>
 
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <webdrivermanager.version>4.3.1</webdrivermanager.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+  <properties>
+    <!-- Java & encoding -->
+    <maven.compiler.release>17</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-    <build>
-        <plugins>
+    <!-- Library versions -->
+    <cucumber.version>6.9.1</cucumber.version>          <!-- aligned with upstream project -->
+    <selenium.version>3.141.59</selenium.version>       <!-- project originally targets Selenium 3 -->
+    <webdrivermanager.version>4.3.1</webdrivermanager.version>
+    <surefire.version>3.2.5</surefire.version>          <!-- modern surefire for Java 17 -->
+    <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
+    <cucumber.report.plugin.version>5.8.0</cucumber.report.plugin.version>
+    <!-- if your repo still writes cucumber.json at target/cucumber.json, leave as-is -->
+    <cucumber.json>${project.build.directory}/cucumber.json</cucumber.json>
+    <cucumber.report.dir>${project.build.directory}/cucumber-report-html</cucumber.report.dir>
+  </properties>
 
-            <!-- Compiler Plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
-                <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
-                </configuration>
-            </plugin>
+  <dependencies>
+    <!-- Cucumber core (Java) -->
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-java</artifactId>
+      <version>${cucumber.version}</version>
+    </dependency>
 
-            <!-- Surefire Plugin (TestNG execution) -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.22.2</version>
-                <configuration>
-                    <suiteXmlFiles>
-                        <suiteXmlFile>src/test/java/testng.xml</suiteXmlFile>
-                    </suiteXmlFiles>
-                    <systemPropertyVariables>
-                        <testng.dtd.http>true</testng.dtd.http>
-                    </systemPropertyVariables>
-                </configuration>
-            </plugin>
+    <!-- Cucumber TestNG runner (the project uses TestNG via testng.xml) -->
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-testng</artifactId>
+      <version>${cucumber.version}</version>
+    </dependency>
 
-            <!-- Cucumber HTML Reporting -->
-            <plugin>
-                <groupId>net.masterthought</groupId>
-                <artifactId>maven-cucumber-reporting</artifactId>
-                <version>3.0.0</version>
-                <executions>
-                    <execution>
-                        <id>execution</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <configuration>
-                            <projectName>ExecuteAutomation</projectName>
-                            <outputDirectory>${project.build.directory}/cucumber-report-html</outputDirectory>
-                            <cucumberOutput>${project.build.directory}/cucumber.json</cucumberOutput>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+    <!-- (Optional) PicoContainer for DI in step definitions -->
+    <dependency>
+      <groupId>io.cucumber</groupId>
+      <artifactId>cucumber-picocontainer</artifactId>
+      <version>${cucumber.version}</version>
+      <scope>test</scope>
+    </dependency>
 
-        </plugins>
-    </build>
+    <!-- Selenium WebDriver (the repo examples use Selenium 3) -->
+    <dependency>
+      <groupId>org.seleniumhq.selenium</groupId>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium.version}</version>
+    </dependency>
 
-    <dependencies>
+    <!-- WebDriverManager to manage browser drivers -->
+    <dependency>
+      <groupId>io.github.bonigarcia</groupId>
+      <artifactId>webdrivermanager</artifactId>
+      <version>${webdrivermanager.version}</version>
+    </dependency>
 
-        <!-- Cucumber Core -->
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-java</artifactId>
-            <version>6.9.1</version>
-        </dependency>
+    <!-- TestNG (since we’re using testng.xml via Surefire) -->
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.10.2</version>
+      <scope>test</scope>
+    </dependency>
 
-        <!-- Cucumber TestNG -->
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-testng</artifactId>
-            <version>6.9.1</version>
-        </dependency>
+    <!-- NOTE: remove cucumber-junit to avoid mixing runners -->
+    <!-- If you really need JUnit later, add it explicitly and configure surefire fork for JUnit. -->
+  </dependencies>
 
-        <!-- Cucumber + JUnit (optional but harmless) -->
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-junit</artifactId>
-            <version>6.9.1</version>
-        </dependency>
+  <build>
+    <plugins>
+      <!-- Java compilation on JDK 17 -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${maven.compiler.plugin.version}</version>
+        <configuration>
+          <release>${maven.compiler.release}</release>
+        </configuration>
+      </plugin>
 
-        <!-- Cucumber PicoContainer -->
-        <dependency>
-            <groupId>io.cucumber</groupId>
-            <artifactId>cucumber-picocontainer</artifactId>
-            <version>6.9.1</version>
-            <scope>test</scope>
-        </dependency>
+      <!-- Run TestNG suite (src/test/java/testng.xml) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire.version}</version>
+        <configuration>
+          <!-- Make sure this path exists in your repo (it does in the upstream project) -->
+          <suiteXmlFiles>
+            <suiteXmlFile>src/test/java/testng.xml</suiteXmlFile>
+          </suiteXmlFiles>
+          <!-- Sometimes needed to let TestNG fetch DTD over HTTP when behind proxies -->
+          <systemPropertyVariables>
+            <testng.dtd.http>true</testng.dtd.http>
+          </systemPropertyVariables>
 
-        <!-- Selenium -->
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>4.0.0-beta-2</version>
-        </dependency>
+          <!-- Ensure Cucumber writes JSON to target/cucumber.json -->
+          <systemProperties>
+            <cucumber.options>--plugin json:${cucumber.json}</cucumber.options>
+          </systemProperties>
+        </configuration>
+      </plugin>
 
-        <!-- PicoContainer -->
-        <dependency>
-            <groupId>org.picocontainer</groupId>
-            <artifactId>picocontainer</artifactId>
-            <version>2.15</version>
-        </dependency>
-
-        <!-- WebDriverManager -->
-        <dependency>
-            <groupId>io.github.bonigarcia</groupId>
-            <artifactId>webdrivermanager</artifactId>
-            <version>${webdrivermanager.version}</version>
-        </dependency>
-
-        <!-- Cucumber Reporting -->
-        <dependency>
-            <groupId>net.masterthought</groupId>
-            <artifactId>cucumber-reporting</artifactId>
-            <version>5.5.2</version>
-        </dependency>
-
-        <!-- Extent Reports -->
-        <dependency>
-            <groupId>com.aventstack</groupId>
-            <artifactId>extentreports</artifactId>
-            <version>5.0.7</version>
-        </dependency>
-
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
-            <scope>provided</scope>
-        </dependency>
-
-    </dependencies>
+      <!-- Cucumber HTML reporting (reads target/cucumber.json and writes HTML under target/...) -->
+      <plugin>
+        <groupId>net.masterthought</groupId>
+        <artifactId>maven-cucumber-reporting</artifactId>
+        <version>${cucumber.report.plugin.version}</version>
+        <executions>
+          <execution>
+            <id>cucumber-report</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>generate</goal>
+            </goals>
+            <configuration>
+              <projectName>ExecuteAutomation</projectName>
+              <outputDirectory>${cucumber.report.dir}</outputDirectory>
+              <jsonFiles>
+                <param>${cucumber.json}</param>
+              </jsonFiles>
+              <!-- Optional pretties -->
+              <buildNumber>${project.version}</buildNumber>
+              <parallelTesting>false</parallelTesting>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
